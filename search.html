@@ -1,0 +1,30 @@
+<h1></h1>
+<div class="form-group">
+  <input type="text" class="form-control" id="searchInput" placeholder="search...">
+</div>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Organization Name</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody id="searchResults">
+
+  </tbody>
+</table>
+
+<template id="rowTemplate">
+  <tr class="result-box">
+    <td class="orgName"></td>
+    <td><button type="button" class="btn btn-outline-dark edit-button">Edit</button></td>
+    <td>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-dark  before-delete-button" data-button-state="delete">Delete</button>
+        <button type="button" class="btn btn-danger delete-button d-none">Confirm</button>
+      </div>
+    </td>
+  </tr>
+</template>

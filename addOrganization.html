@@ -1,0 +1,131 @@
+<h1></h1>
+<form class="add-organization-form needs-validation" id ="add-organization-form" novalidate>
+
+  <div class="form-group">
+    <label for="name">Organization Name</label>
+    <input type="text" class="form-control" id="name" required>
+      <div class="invalid-feedback">
+      Please enter the organization's name.
+      </div>
+      <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="contact">Organization Contact</label>
+    <input type="email" class="form-control" id="contact" required>
+      <div class="invalid-feedback">
+      Please enter the organization's email address.
+      </div>
+      <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="owner">Organization Owner</label>
+    <input type="text" class="form-control" id="owner" required>
+      <div class="invalid-feedback">
+      Please enter the owner's name.
+      </div>
+      <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="location">Location</label>
+    <input type="text" class="form-control" id="location" required>
+    <div class="invalid-feedback">
+      Please enter the delivery location. 
+      </div>
+      <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="bagReq">Bags Requested</label>
+    <input type="number" class="form-control" id="bagReq"  min="1" step="1" required>
+      <div class="invalid-feedback">
+      Please enter how many bags the organization requested. 
+      </div>
+      <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="bagDist">Bags Distributed</label>
+    <input type="number" class="form-control" id="bagDist" value="0" min="0" step="1">
+    <small class="form-text text-muted">Please enter how many of those bags have been distributed.</small>
+
+  </div>
+
+    <div class="form-group">
+      <label for="category">Pickup/Delivery</label>
+      <select class="custom-select" id="category" required>
+        <option value="" selected disabled hidden>Select...</option>
+        <option value="Delivery">Delivery</option>
+        <option value="Pickup">Pickup</option>
+      </select>
+    </div>
+
+  <div class="form-group">
+    <label for="notes">Notes</label>
+    <input type="text" class="form-control" id="notes">
+    <small class="form-text text-muted">Please enter any additional information here.</small>
+
+  </div>
+
+
+
+  <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown">
+    Bag Items
+  </button>
+      <div id='checkform' class="dropdown-menu">
+        <label class="dropdown-item"><input type="checkbox" value='HandS'> Hand Sanitizer</label>
+        <label class="dropdown-item"><input type="checkbox" value='Wipes'> Wipes</label>
+        <label class="dropdown-item"><input type="checkbox" value='Masks'> Masks</label>
+        <label class="dropdown-item"><input type="checkbox" value='BandAid'> Band-Aids</label>
+        <label class="dropdown-item"><input type="checkbox" value='Treat'> Treat</label>
+        <label class="dropdown-item"><input type="checkbox" value='PersonalItemR'> Personalized Item</label>
+        <label class="dropdown-item"><input type="checkbox" value='PencilR'> Pencil/Eraser</label>
+        <label class="dropdown-item"><input type="checkbox" value='BrownBagR'> Brown Bag</label>
+        <label class="dropdown-item"><input type="checkbox" value='CompleteBagR'> Complete Bag</label>
+        <label class="dropdown-item"><input type="checkbox" value='ExtraR'> Extra/Misc</label>
+        <label class="dropdown-item"><input type="checkbox" value='PostcardR'> OH Postcard</label>
+      </div>
+  </div>
+   <br>
+  </br>
+
+    <div>
+    <label><input id="newsletter" type="checkbox"> Newsletter</label>
+
+  </div>
+
+    <div>
+    <label><input id="website" type="checkbox"> Website</label>
+
+  </div>
+
+
+
+
+
+  </div>
+
+  <br>
+  </br>
+  
+
+  <button class="btn btn-primary" id = "add-org">Add Organization</button>
+  <div class="alert alert-success invisible" id = "successMessage2" role="alert">
+  Organization Added
+</div>
+
+</form>
+

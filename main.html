@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <style>
+    .nav-link {
+      cursor: pointer;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="container">
+    <ul class="nav nav-tabs">
+
+      <li class="nav-item">
+        <div class="nav-link" id="search-link">Search</div>
+      </li>
+
+      <li class="nav-item">
+        <div class="nav-link" id="addOrganization-link">Add Organization</div>
+      </li>
+    </ul>
+
+    <div id="app"></div>
+    <!-- Content here -->
+  </div>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+  </script>
+  <script>
+    var data;
+
+    function loadView(options){
+      var id = typeof options.id === "undefined" ? "app" : options.id;
+      var cb = typeof options.callback === "undefined" ? function(){} : options.callback;
+  
+      google.script.run.withSuccessHandler(function(html){
+        document.getElementById(id).innerHTML = html;
+        typeof options.params === "undefined" ? cb() : cb(options.params);
+      })[options.func]();
+    }
+
+    function setDataForSearch(){
+      google.script.run.withSuccessHandler(function(dataReturned){
+        data = dataReturned.slice();
+      }).getDataForSearch();
+    }
+
+    //will populate the returned organization names
+    function search(){
+      
+      var searchInput = document.getElementById("searchInput").value;       //get the value inputted in the search bar
+      var resultsArray = data.filter(function(r){
+        return r[0].toString().toLowerCase().indexOf(searchInput.toString().toLowerCase()) !== -1;
+      });
+
+      var searchResultsBox = document.getElementById("searchResults");
+      var templateBox  = document.getElementById("rowTemplate");
+      var template = templateBox.content;
+
+      searchResultsBox.innerHTML = "";
+
+      resultsArray.forEach(function(r){
+
+        var tr = template.cloneNode(true);
+        var orgNameColumn = tr.querySelector(".orgName");
+        var deleteButton = tr.querySelector(".delete-button");
+        var editButton = tr.querySelector(".edit-button");
+
+        orgNameColumn.textContent = r[0];
+        deleteButton.dataset.organizationName = r[0];
+        editButton.dataset.organizationName = r[0];
+        searchResultsBox.appendChild(tr);
+
+      });
+    }
+
+    //the functionality when you click "Delete" on the search tab (two buttons pop up - Confirm/Cancel)
+    function displayConfirmDelete(e){
+
+      if(e.target.dataset.buttonState === "delete"){
+        e.target.nextElementSibling.classList.remove("d-none");
+        e.target.textContent = "Cancel";
+        e.target.dataset.buttonState = "cancel";
+      }
+      else{
+        e.target.nextElementSibling.classList.add("d-none");
+        e.target.textContent = "Delete";
+        e.target.dataset.buttonState = "delete";
+      }
+    }
+
+    //gets the orgName and calls the server side function to delete from the sheet, the name will also be deleted from the search results in real time.
+    function deleteOrg(e){
+
+      var orgName = e.target.dataset.organizationName;
+      google.script.run.withSuccessHandler(function(){
+        e.target.closest(".result-box").remove();         //remove entry from the search list after deleted from sheet
+        var orgNames = data.map(function(r){ return r[0].toString().toLowerCase() });
+        var index = orgNames.indexOf(orgName.toString().toLowerCase());
+        data.splice(index,1);
+      }).deleteByOrgName(orgName);
+    }
+    
+    //grabs all data for the organization and inputs it on the edit organization tab fields
+    function afterEditViewLoads(params){
+
+      document.getElementById("name").value = params.org_Name;
+      google.script.run.withSuccessHandler(function(organizationInfo){
+        document.getElementById("contact").value = organizationInfo.orgContact;
+        document.getElementById("owner").value = organizationInfo.orgOwner;
+        document.getElementById("location").value = organizationInfo.orgLocation;
+        document.getElementById("bagReq").value = organizationInfo.orgBagReq;
+        document.getElementById("bagDist").value = organizationInfo.orgBagDist;
+        document.getElementById("category").value = organizationInfo.orgPickDel;
+        document.getElementById("notes").value = organizationInfo.orgNotes;
+      }).getOrgByName(params.org_Name);
+    }
+
+    //will take all the entries on the edit organization tab and edit the sheet data by calling server side function
+    function editOrg(){
+        var orgInfo = {};
+        orgInfo.orgContact = document.getElementById("contact").value;
+        orgInfo.orgOwner = document.getElementById("owner").value;
+        orgInfo.orgLocation = document.getElementById("location").value;
+        orgInfo.orgBagReq = document.getElementById("bagReq").value;
+        orgInfo.orgBagDist = document.getElementById("bagDist").value;
+        orgInfo.orgPickDel = document.getElementById("category").value;
+        orgInfo.orgNotes = document.getElementById("notes").value;
+        var name = document.getElementById("name").value;
+      google.script.run.withSuccessHandler(function(res){
+        document.getElementById("successMessage").classList.remove("invisible");
+        setTimeout(function(){
+          document.getElementById("successMessage").classList.add("invisible");
+        },2500);
+      }).editOrgByName(name, orgInfo);
+    }
+
+    //will take all the entries on the add organization tab and add it to the end of sheet data by calling server side function
+    function addOrg(){
+        pick_del = document.getElementById("category").value;
+        var orgInfo = {};
+        orgInfo.orgName = document.getElementById("name").value;
+        orgInfo.orgContact = document.getElementById("contact").value;
+        orgInfo.orgOwner = document.getElementById("owner").value;
+        orgInfo.orgLocation = document.getElementById("location").value;
+        orgInfo.orgBagReq = document.getElementById("bagReq").value;
+        orgInfo.orgBagDist = document.getElementById("bagDist").value;
+        orgInfo.orgNotes = document.getElementById("notes").value;
+        orgInfo.orgNew = document.getElementById("newsletter").checked;
+        orgInfo.orgWeb = document.getElementById("website").checked;
+        
+        var list=[]
+        $('#checkform').find("input:checkbox:checked").each(function(e){
+          list.push($(this).val())
+          })
+
+      google.script.run.withSuccessHandler(function(res){
+          document.getElementById("successMessage2").classList.remove("invisible");
+          setTimeout(function(){
+          document.getElementById("successMessage2").classList.add("invisible");
+        },2500);
+      }).addOrganization(orgInfo, list, pick_del);
+    }
+
+
+    //following 3 functions are to load the respective HTML's 
+    function loadSearchView(){
+      loadView({func: "loadSearchView", callback: setDataForSearch });
+    }
+
+    function loadOrganizationView(){
+      loadView({func: "loadOrganizationView" });
+    }
+
+    function loadEditOrganizationView(){
+      loadView({func: "loadEditOrganizationView" });
+    }
+
+    document.getElementById("search-link").addEventListener("click",loadSearchView);
+    document.getElementById("addOrganization-link").addEventListener("click",loadOrganizationView);
+
+    function inputEventHandler(e){
+      if(e.target.matches("#searchInput")){
+        search();
+      }
+    }
+
+    //click event handlers so when you click a button it produces an action
+    function clickEventHandler(e){
+      if(e.target.matches(".delete-button")){
+        deleteOrg(e);
+      }
+
+      if(e.target.matches(".before-delete-button")){
+        displayConfirmDelete(e);
+      }
+
+      if(e.target.matches(".edit-button")){
+        loadView({func: "loadEditOrganizationView", callback: afterEditViewLoads, params: {org_Name: e.target.dataset.organizationName} });
+      }
+
+      if(e.target.matches("#save-changes")){
+        var form = document.getElementById("edit-organization-form"); 
+        if (!form.checkValidity()){        
+          e.preventDefault();
+          e.stopPropagation();
+        }else{
+          editOrg();
+          e.preventDefault();
+        }
+      form.classList.add('was-validated');
+      }
+
+      if(e.target.matches("#add-org")){
+        var form = document.getElementById("add-organization-form"); 
+
+      if (!form.checkValidity()){        
+        e.preventDefault();
+        e.stopPropagation();
+      }else{
+        addOrg();
+        e.preventDefault();
+      }
+      form.classList.add('was-validated');
+   
+      
+    
+      }
+
+    }
+
+    document.getElementById("app").addEventListener("input",inputEventHandler);
+    document.getElementById("app").addEventListener("click",clickEventHandler);
+ 
+  
+  </script>
+  <?var url = getUrl();?><input type="hidden" value="<?= url ?>" id="url" />
+</body>
+
+</html>

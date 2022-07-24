@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <style>
+    #block_container {
+      text-align: center;
+    }
+
+    #successMessage3,
+    #failMessage3 {
+      display: inline;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="container">
+
+    <div id="app">
+      <h2>Create a bag</h2>
+
+      <form class="needs-validation" id="bagsForm" novalidate>
+
+
+        <div class="form-group">
+          <label for="category">Select the Receipient</label>
+          <select class="form-control" id="bagReceipient" required>
+          <option value="" selected disabled hidden>Select...</option>
+      </select>
+          <div class="invalid-feedback">
+            Please select the receipient
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="NumBags">How Many Bags?</label>
+          <input type="number" class="form-control" id="NumBags" step="1" required>
+        </div>
+
+        <br></br>
+
+        <div class="form-group">
+          <label for="HandS1">Hand Sanitizer</label>
+          <input type="number" class="form-control" id="HandS1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Wipes1">Disinfecting Wipes</label>
+          <input type="number" class="form-control" id="Wipes1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Masks1">Masks</label>
+          <input type="number" class="form-control" id="Masks1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="BandAid1">Band Aids</label>
+          <input type="number" class="form-control" id="BandAid1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Treat1">Treat</label>
+          <input type="number" class="form-control" id="Treat1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Pesonalized1">Personalized Items</label>
+          <input type="number" class="form-control" id="Pesonalized1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="Pencil/Eraser">Pencil/Eraser</label>
+          <input type="number" class="form-control" id="Pencil/Eraser" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="BrownBags1">Brown Bags</label>
+          <input type="number" class="form-control" id="BrownBags1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="CompleteBags1">Complete Bags</label>
+          <input type="number" class="form-control" id="CompleteBags1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="ExtraMisc1">Extra/Misc</label>
+          <input type="number" class="form-control" id="ExtraMisc1" step="1" value="0" required>
+        </div>
+
+        <div class="form-group">
+          <label for="PostCard1">OH Postcard</label>
+          <input type="number" class="form-control" id="PostCard1" step="1" value="0" required>
+        </div>
+
+        <button class="btn btn-primary" id = "create-bag" >Create Bag</button>
+
+        <div id="block_container">
+
+          <div class="alert alert-success invisible" id="successMessage3" role="alert">Bag Created</div>
+          <div class="alert alert-danger invisible" id="failMessage3" role="alert">**Check items in bag **Check if enough inventory</div>
+
+        </div>
+
+        <br></br>
+
+      </form>
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+    <script>
+      function afterPageLoads(){
+    google.script.run.withSuccessHandler(afterDropDownReturned).getDataForSearch();
+  }
+
+  function afterDropDownReturned(arrayOfArrays){
+    var receipients = document.getElementById("bagReceipient");
+
+    arrayOfArrays.forEach(function(r){
+      var option = document.createElement("option");
+      option.textContent = r[0];
+      receipients.appendChild(option);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", afterPageLoads);
+
+  function addTheBag(){
+        bagReceipient = document.getElementById("bagReceipient").value;
+        numBags1 = document.getElementById("NumBags").value;
+        var bagList = {};
+        bagList.handSS = document.getElementById("HandS1").value;
+        bagList.disWipes = document.getElementById("Wipes1").value;
+        bagList.maskss = document.getElementById("Masks1").value;
+        bagList.bandaidd = document.getElementById("BandAid1").value;
+        bagList.treatt = document.getElementById("Treat1").value;
+        bagList.personalItem = document.getElementById("Pesonalized1").value;
+        bagList.pencilEraser = document.getElementById("Pencil/Eraser").value;
+        bagList.brownbagg = document.getElementById("BrownBags1").value;
+        bagList.completebagg = document.getElementById("CompleteBags1").value;
+        bagList.extraMisc = document.getElementById("ExtraMisc1").value;
+        bagList.postCardd = document.getElementById("PostCard1").value;
+
+      
+      google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).addBag(bagList, bagReceipient, numBags1);
+
+      function onSuccess(){
+        document.getElementById("successMessage3").classList.remove("invisible");
+        setTimeout(function(){
+          document.getElementById("successMessage3").classList.add("invisible");
+        },3000);
+      }
+
+      function onFailure(){
+        document.getElementById("failMessage3").classList.remove("invisible");
+        setTimeout(function(){
+          document.getElementById("failMessage3").classList.add("invisible");
+        },3000);
+      }
+  }
+
+    function clickEventHandler(e){
+      if(e.target.matches("#create-bag")){
+        var form = document.getElementById("bagsForm"); 
+        if (!form.checkValidity()) {
+          e.preventDefault();
+        }else{
+          addTheBag();
+          e.preventDefault();
+        }
+        form.classList.add('was-validated');
+      }
+    }
+
+    document.getElementById("app").addEventListener("click",clickEventHandler);
+ 
+  
+    </script>
+    <?var url = getUrl();?><input type="hidden" value="<?= url ?>" id="url" />
+</body>
+
+</html>
